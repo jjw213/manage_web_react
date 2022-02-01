@@ -1,70 +1,177 @@
-# Getting Started with Create React App
+# 소설 추천 시스템
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Node](https://img.shields.io/badge/node-v14.17.1-blue)
+![NPM](https://img.shields.io/badge/npm-v7.19.0-blue)
 
-## Available Scripts
+![Node.js](https://img.shields.io/badge/Node.js-339933.svg?&style=for-the-badge&logo=Node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000.svg?&style=for-the-badge&logo=Express&logoColor=white)
+![Mysql](https://img.shields.io/badge/MySQL-4479A1.svg?&style=for-the-badge&logo=MySQL&logoColor=white)
+![js](https://img.shields.io/badge/JavaScript-F7DF1E.svg?&style=for-the-badge&logo=JavaScript&logoColor=white)
 
-In the project directory, you can run:
 
-### `npm start`
+# DB Table Info
+``` MySQL
+--
+-- 1. 유저 정보 테이블
+--
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+CREATE TABLE `userdata` (
+	`idx` INT(10) NOT NULL AUTO_INCREMENT,
+	`id` VARCHAR(32) NOT NULL COLLATE 'utf8_general_ci',
+	`password` VARCHAR(1024) NOT NULL COLLATE 'utf8_general_ci',
+	`nickname` VARCHAR(64) NOT NULL COLLATE 'utf8_general_ci',
+	`genre` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`createdate` DATETIME NOT NULL,
+	`is_joinout` INT(10) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`idx`) USING BTREE,
+	UNIQUE INDEX `id` (`id`) USING BTREE
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+--
+-- 2. 소설 정보 테이블
+--
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+CREATE TABLE `novel_data` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`title` VARCHAR(100) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`imgurl` VARCHAR(300) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`genre` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`description` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`author_id` INT(10) NULL DEFAULT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `FK_noveldata_author` (`author_id`) USING BTREE,
+	CONSTRAINT `FK_noveldata_author` FOREIGN KEY (`author_id`) REFERENCES `novelrec`.`author` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+--
+-- 3. 작가 정보 테이블
+--
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+CREATE TABLE `author` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	`profile` VARCHAR(200) NULL DEFAULT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+--
+-- 4. 호감도 정보 테이블
+--
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+CREATE TABLE `novel_scoredata` (
+	`uid` INT(10) NOT NULL,
+	`nid` INT(10) NOT NULL,
+	`score` INT(10) NOT NULL DEFAUTL '0',
+	INDEX `FK_likenovel_userdata` (`uid`) USING BTREE,
+	INDEX `FK_likenovel_noveldata` (`nid`) USING BTREE,
+	CONSTRAINT `FK_likenovel_userdata` FOREIGN KEY (`uid`) REFERENCES `novelrec`.`userdata` (`idx`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `FK_likenovel_noveldata` FOREIGN KEY (`nid`) REFERENCES `novelrec`.`novel_data` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+--
+-- 5. 찜목록 정보 테이블
+--
 
-## Learn More
+CREATE TABLE `wishlist` (
+	`uid` INT(10) NOT NULL,
+	`nid` INT(10) NOT NULL,
+	INDEX `FK_wishlist_userdata` (`uid`) USING BTREE,
+	INDEX `FK_wishlist_noveldata` (`nid`) USING BTREE,
+	CONSTRAINT `FK_wishlist_userdata` FOREIGN KEY (`uid`) REFERENCES `novelrec`.`userdata` (`idx`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `FK_wishlist_noveldata` FOREIGN KEY (`nid`) REFERENCES `novelrec`.`novel_data` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- novel, author JOIN으로 작가 작품 목록 추출
+- user, wishlist, novel JOIN으로 찜 목록 추출
+- 
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+INSERT INTO author VALUES (1,'egoing','developer');
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+--
+-- 6. 소설 링크 정보 테이블
+--
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+CREATE TABLE `novel_link` (
+	`linkId` INT(10) NOT NULL AUTO_INCREMENT,
+	`nid` INT(10) NOT NULL,
+	`url` VARCHAR(300) NOT NULL COLLATE 'utf8_general_ci',
+	PRIMARY KEY (`linkId`) USING BTREE,
+	INDEX `FK_novelurl_noveldata` (`nid`) USING BTREE,
+	CONSTRAINT `FK_novelurl_noveldata` FOREIGN KEY (`nid`) REFERENCES `novelrec`.`novel_data` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+--
+-- 7. 소설 태그 정보 테이블
+--
 
-### Deployment
+CREATE TABLE `novel_tag` (
+	`nid` INT(10) UNSIGNED NOT NULL,
+	`tag` VARCHAR(30) NOT NULL DEFAULT '' COLLATE 'utf8mb4_0900_ai_ci'
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
 
-### `npm run build` fails to minify
+# Run
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Crawler
+
+### crawler_run.js
+
+- 위 파일을 실행하면 네이버, 카카오페이지, 조아라, 리디북스 사이트의 소설 데이터를 크롤링하여 csv 폴더에 각각의 이름으로 저장하며, 크롤링된 csv 파일들을 가지고 하나의 csv 파일로 통합합니다.
+
+### week_crawler_run.js
+
+- 위 파일을 실행하면 네이버, 조아라, 리디북스 사이트의 주간 소설 데이터를 크롤링하여 csv 폴더에 각각의 이름으로 저장하며, 크롤링된 csv 파일들을 가지고 하나의 csv 파일로 통합합니다.
+
+## NLP Tag
+
+### insert_db
+
+- 위 파일을 실행하면 crawler_run.js를 통해 생성된 csv 파일을 DB에 삽입합니다.
+
+### run_pycode.js
+
+- 위 파일을 실행하면 python으로 작성된 NLP 폴더의 novel_taging.py를 실행합니다.
+
+### novel_taging.py
+
+- 위 파일은 run_pycode.js에 의해 실행되며, 실행 시 DB에 있는 소설 데이터에 대한 NLP 작업(TAG 작업)을 진행하여 novel_tag 테이블에 INSERT 합니다.
+
+### week_run_pycode.js
+
+- 위 파일을 실행하면 python으로 작성된 NLP 폴더의 week_novel_taging.py를 실행합니다.
+
+### week_novel_taging.py
+
+- 위 파일은 week_run_pycode.js에 의해 실행되며, 실행 시 week_crawler_run.js에 의해 생성된 csv 파일은 DB에 삽입함과 동시에 삽입하는 소설에 대한 NLP 작업(TAG 작업)을 진행하여 해당 결과를 DB에 함께 INSERT 합니다.

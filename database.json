@@ -1,0 +1,7 @@
+{
+    "host": "management.cdux9seb6ngf.us-east-2.rds.amazonaws.com",
+    "user":"user",
+    "password": "aallqp213",
+    "port": "3306",
+    "database":"management"
+}
