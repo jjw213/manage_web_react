@@ -3,5 +3,5 @@
     "user":"user",
     "password": "aallqp213",
     "port": "3306",
-    "database":"management"
+    "database":"board"
 }

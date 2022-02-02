@@ -10,14 +10,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-jest": "^26.6.0",
+    "babel-loader": "^8.1.0",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "csv-parse": "^4.16.0",
     "csv-stringify": "^5.6.2",
+    "eslint": "^7.11.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "i": "^0.3.7",
+    "jest": "^26.6.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "mysql2": "^2.3.0",
@@ -25,7 +29,11 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "puppeteer": "^10.2.0",
-    "react-bootstrap": "^1.6.3"
+    "react-bootstrap": "^1.6.3",
+    "react-scripts": "^5.0.0",
+    "webpack": "^4.44.2",
+    "webpack-dev-server": "^3.11.1",
+    "yarn": "^1.22.17"
   },
   "devDependencies": {
     "concurrently": "^6.2.1",
