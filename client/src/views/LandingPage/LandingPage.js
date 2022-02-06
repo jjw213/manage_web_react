@@ -3,18 +3,19 @@ import Slider from "../Slide/Slider";
 import Carousel from "../Slide/SliderCarousel";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { USER_SERVER } from '../../Config.js';
+import { API_URL,API_KEY,IMAGE_BASE_URL, USER_SERVER } from '../../Config.js';
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 import Layout  from "./Layout";
 
 function LandingPage() {
-
-    const user = useSelector(state => state.user)
+    const user = useSelector(state => state.user);
     const [last_Posts, setlastPosts] = useState([]);
     const [lastslide, setlastSlide] = useState(0); // 현재 슬라이드
     const [top_Posts, settopPosts] = useState([]);
     const [topslide, settopSlide] = useState(0);
+    const [Movies, setMovies] =useState([]);
+    const [MainMovieImage, setMainMovieImage] =useState(null);
 
     const handleLClickMove = useCallback((slideNum) => {
         setlastSlide(slideNum);
@@ -22,22 +23,36 @@ function LandingPage() {
     const handleTClickMove = useCallback((slideNum) => {
         settopSlide(slideNum);
     }, []);
-    useEffect(() => {
-        axios
-            .get(`${USER_SERVER}/novel/list/1`)
-            .then(({ data }) => { setlastPosts(data.slice(0, 10));});
+    // useEffect(() => {
+    //     axios
+    //         .get(`${USER_SERVER}/novel/list/1`)
+    //         .then(({ data }) => { setlastPosts(data.slice(0, 10));});
 
-    }, [])
-    useEffect(() => {
-        axios
-            .get(`${USER_SERVER}/novel/list/view/0`)
-            .then(({ data }) => { settopPosts(data.slice(0, 10));});
+    // }, [])
+    // useEffect(() => {
+    //     axios
+    //         .get(`${USER_SERVER}/novel/list/view/0`)
+    //         .then(({ data }) => { settopPosts(data.slice(0, 10));});
 
-    }, [])
+    // }, [])
+    useEffect(()=> {
+        const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+        fetch(endpoint)
+        .then(response=>response.json())
+        .then(response=>{
+            
+            setMovies([...response.results])
+            setMainMovieImage(response.results[5])
 
+            console.log(MainMovieImage)
+            })
+            
+    },[])
+    //console.log(MainMovieImage.backdrop_path)
     return (
         <Fragment>
-            <Slider />
+        {MainMovieImage && console.log(MainMovieImage.backdrop_path),
+            <Slider /> }
             <div className="pageTemplate">
             
                 <div className="headerNav__item">
