@@ -119,7 +119,7 @@ table td, table th { cursor: pointer; }
 
 .errorBox { color: #dc3545; font-size: 0.8rem; }
 /* 슬라이드 */
-.slider { overflow: hidden; display: flex; align-items: center; position: relative; margin: 0 ; margin-left: auto;margin-right: auto; padding: 0; width: 70%; height: 500px; background: black; box-sizing: border-box; }
+.slider { overflow: hidden; display: flex; align-items: center; position: relative; margin: 0 ; margin-left: auto;margin-right: auto; padding: 0; width: 70%; height: 40%; background: black; box-sizing: border-box; }
 .slider__slide { overflow: hidden; min-width: 100%; height: 100%; transition: 0.5s; }
 .slider button { position: absolute; top: 50%; transform: translateY(-50%); width: 10%; height: 100%; background: none; outline: none; border: none; transition: 0.5s; }
 .slider button:hover { background: rgba(0, 0, 0, 0.356); cursor: pointer; color: white; }

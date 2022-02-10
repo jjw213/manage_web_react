@@ -8,7 +8,7 @@ const SectionContainer = styled.section`
   background: url("/images/home_map.png") no-repeat -2% center;
   background-color: ${white};
   .section-wrap {
-    width: 1200px;
+    width: 100%;
     height: 100%;
     margin: 0 auto;
     display: flex;
@@ -17,7 +17,7 @@ const SectionContainer = styled.section`
   }
   .section-wrap > img {
     width: 373px;
-    margin-right: 27px;
+    margin-right: 2px;
   }
   .section-wrap > img.fly {
     animation: fly 2s forwards;
@@ -36,7 +36,7 @@ const SectionContainer = styled.section`
 
 const ContentWrap = styled.div`
   text-align: left;
-  margin: 0 20px;
+  margin: 0 10%;
   h3 {
     font-size: 40px;
     line-height: 1.25em;
@@ -83,7 +83,7 @@ const Layout = () => {
   return (
     <SectionContainer>
       <div className="section-wrap">
-        <img
+        <img style={{width:'20%'}}
           className={classNames({ fly: playAnimate })}
           src="/images/main1.png"
           alt=""
