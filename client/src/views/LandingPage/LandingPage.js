@@ -7,6 +7,8 @@ import { API_URL,API_KEY,IMAGE_BASE_URL, USER_SERVER } from '../../Config.js';
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 import Layout  from "./Layout";
+import GridCard from './GridCard';
+import {Row} from 'antd';
 
 function LandingPage() {
     const user = useSelector(state => state.user);
@@ -16,13 +18,16 @@ function LandingPage() {
     const [topslide, settopSlide] = useState(0);
     const [Movies, setMovies] =useState([]);
     const [MainMovieImage, setMainMovieImage] =useState(null);
+    const [CurrentPage, setCurrentPage] = useState(0)
 
-    const handleLClickMove = useCallback((slideNum) => {
-        setlastSlide(slideNum);
-    }, []);
-    const handleTClickMove = useCallback((slideNum) => {
-        settopSlide(slideNum);
-    }, []);
+    // const handleLClickMove = useCallback((slideNum) => {
+    //     setlastSlide(slideNum);
+    // }, []);
+    // const handleTClickMove = useCallback((slideNum) => {
+    //     settopSlide(slideNum);
+    // }, []);
+
+
     // useEffect(() => {
     //     axios
     //         .get(`${USER_SERVER}/novel/list/1`)
@@ -37,95 +42,60 @@ function LandingPage() {
     // }, [])
     useEffect(()=> {
         const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+        fetchMovies(endpoint)
+    },[])
+
+
+    const fetchMovies=(endpoint)=>{
         fetch(endpoint)
         .then(response=>response.json())
         .then(response=>{
             
             setMovies([...response.results])
-            setMainMovieImage(response.results[5])
-
-            console.log(MainMovieImage)
+            setMainMovieImage(response.results[0])
+            setCurrentPage(response.page)
             })
-            
-    },[])
+    }
+    const loadMoreItems=()=>{
+        const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=${CurrentPage +1}`
+        fetchMovies(endpoint)
+    }
+    const loadPreviousItems=()=>{
+        const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=en-US&page=${CurrentPage -1}`
+        fetchMovies(endpoint)
+    }
+    
+
     //console.log(MainMovieImage.backdrop_path)
     return (
         <Fragment>
-        {MainMovieImage && console.log(MainMovieImage.backdrop_path),
+        {MainMovieImage && console.log(MainMovieImage),
             <Slider /> }
-            <div className="pageTemplate">
-            
-                <div className="headerNav__item">
-                    <NavLink
-                        to="/"
-                        activeClassName="active"
-                    >
-                        최신 TOP 10
-                    </NavLink>
-                </div>
+            <div style={{width : '85%', margin:'1rem auto'}}>
+                <h2>Movies by latest</h2>
+                <hr/>
 
-                <div className="slide">
-                    <Container>
-                        {last_Posts.map((data, index) => (
-                            <Post key={index} className="slider__slide"
-                                style={{ transform: `translateX(${-lastslide * 715}%)` }}>
-                                <Body>
-                                    <a href={`/novel/${data.id}`}>
-                                        {/* 작품 표지 이미지 url */}
-                                        <img src={`${data.imgurl}`} width='150' align='center'></img>
-
-                                    </a>
-                                </Body>
-                                {/* 작품 타이틀*/}
-                                <Title>{data.title}</Title>
-
-                            </Post>
-
-                        ))}
-                        {/* </Slide> */}
-                        <Carousel
-                            totalLength={2}
-                            currentSlide={lastslide}
-                            handleClickMove={handleLClickMove}
-                        />
-                    </Container>
-                </div>
-                <div className="headerNav__item">
-                    <NavLink
-                        to="/"
-                        activeClassName="active"
-                    >
-                        인기작
-                    </NavLink>
-                </div>
-
-                <div className="slide">
-                    <Container>
-                        {top_Posts.map((data, index) => (
-                            <Post key={index} className="slider__slide"
-                                style={{ transform: `translateX(${-topslide * 715}%)` }}>
-                                <Body>
-                                    <a href={`/novel/${data.id}`}>
-                                        {/* 작품 표지 이미지 url */}
-                                        <img src={`${data.imgurl}`} width='150' align='center'></img>
-
-                                    </a>
-                                </Body>
-                                {/* 작품 타이틀*/}
-                                <Title>{data.title}</Title>
-
-                            </Post>
-
-                        ))}
-                        {/* </Slide> */}
-                        <Carousel
-                            totalLength={2}
-                            currentSlide={topslide}
-                            handleClickMove={handleTClickMove}
-                        />
-                    </Container>
-                </div>
-            </div>   
+            <Row gutter={[16,16]}>
+                {Movies && Movies.map((movie, index)=>(
+                    <React.Fragment key={index}>
+                        <GridCard image={movie.poster_path ? 
+                            `${IMAGE_BASE_URL}w500${movie.poster_path}`:null}
+                            movieId={movie.id}
+                            movieName={movie.original_title}
+                            />
+                    </React.Fragment>
+                 ) )}
+                
+            </Row>
+            </div>
+            <div style={{display:'flex',justifyContent:'center'}}>
+                <button onClick={loadMoreItems}>load</button>
+            </div>
+            { CurrentPage>=2 &&
+            <div style={{display:'flex',justifyContent:'center'}}>
+            <button onClick={loadPreviousItems}>Previous</button>
+            </div>
+            }
             <Layout/>
    
         </Fragment>
